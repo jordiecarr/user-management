@@ -51,6 +51,25 @@ def create_post(request):
     return render(request, 'main/create_post.html', {"form": form})
 
 
+@login_required(login_url="/login")
+def edit_post(request, post_id):
+    post = Post.objects.filter(id=post_id).first()
+
+    if not post:
+        return redirect("/home")
+
+    if request.method == 'POST':
+        form = PostForm(request.POST, instance=post)
+        if form.is_valid():
+            form.save()
+            return redirect("/home")
+    else:
+        form = PostForm(instance=post)
+
+    return render(request, 'main/edit_post.html', {"form": form})
+
+
+
 def sign_up(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
