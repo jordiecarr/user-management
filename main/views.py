@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import RegisterForm, PostForm
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import login, logout, authenticate
@@ -51,22 +51,17 @@ def create_post(request):
     return render(request, 'main/create_post.html', {"form": form})
 
 
-@login_required(login_url="/login")
+@login_required
 def edit_post(request, post_id):
-    post = Post.objects.filter(id=post_id).first()
-
-    if not post:
-        return redirect("/home")
-
+    post = get_object_or_404(Post, pk=post_id)
     if request.method == 'POST':
         form = PostForm(request.POST, instance=post)
         if form.is_valid():
             form.save()
-            return redirect("/home")
+            return redirect('post_detail', post_id=post_id)
     else:
         form = PostForm(instance=post)
-
-    return render(request, 'main/edit_post.html', {"form": form})
+    return render(request, 'main/edit_post.html', {'form': form, 'post': post})
 
 
 
