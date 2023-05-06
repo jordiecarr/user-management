@@ -14,8 +14,11 @@
           <p>{{ post.description }}</p>
         </div>
         <div>
+          {% if user == post.author %}
+            <a href="{% url 'edit_post' post.id %}" class="btn btn-primary">Edit</a>
+          {% endif %}
           {% if user == post.author or perms.main.delete_post %}
-            <form method="post">
+            <form method="post" class="d-inline">
               {% csrf_token %}
               <button
                 type="submit"
@@ -24,19 +27,6 @@
                 value="{{ post.id }}"
               >
                 Delete
-              </button>
-            </form>
-          {% endif %}
-          {% if user.is_staff %}
-            <form method="post">
-              {% csrf_token %}
-              <button
-                type="submit"
-                class="btn btn-warning"
-                name="user-id"
-                value="{{ post.author.id }}"
-              >
-                Ban User
               </button>
             </form>
           {% endif %}
